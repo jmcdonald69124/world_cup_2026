@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { SCHEDULE } from '../data/schedule.js';
 import MatchCard from '../components/MatchCard.jsx';
@@ -104,7 +104,6 @@ function FloatingBall({ style }) {
 }
 
 export default function Home() {
-  const navigate = useNavigate();
   const liveMatches = SCHEDULE.filter(m => m.status === 'LIVE');
   const upcomingMatches = SCHEDULE.filter(m => m.status === 'SCHEDULED').slice(0, 4);
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TEAMS, getTeamsByGroup, GROUPS } from '../data/teams.js';
-import { SCHEDULE, getMatchesByGroup } from '../data/schedule.js';
+import { getTeamsByGroup, GROUPS } from '../data/teams.js';
+import { SCHEDULE } from '../data/schedule.js';
 
 function buildStandings(group) {
   const teams = getTeamsByGroup(group);

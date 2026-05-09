@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { SCHEDULE } from '../data/schedule.js';
-import { TEAMS, getTeamsByGroup, GROUPS } from '../data/teams.js';
+import { getTeamsByGroup, GROUPS } from '../data/teams.js';
 import MatchCard from '../components/MatchCard.jsx';
 
 const FILTERS = ['All', 'Live', 'Scheduled', 'Group A', 'Group B', 'Group C', 'Group D', 'Group E'];

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { withCache, TTL } from '../utils/cache.js';
 
 const BASE_URL = 'https://api.football-data.org/v4';
 const API_KEY = import.meta.env.VITE_FOOTBALL_DATA_API_KEY;
@@ -47,15 +48,51 @@ client.interceptors.request.use(async (config) => {
   return config;
 });
 
+const get = (url, params) => client.get(url, params ? { params } : undefined).then(r => r.data);
+
 export const footballDataApi = {
-  getCompetition: () => client.get('/competitions/WC'),
-  getMatches: (params = {}) => client.get('/competitions/WC/matches', { params }),
-  getTeams: () => client.get('/competitions/WC/teams'),
-  getStandings: () => client.get('/competitions/WC/standings'),
-  getMatch: (id) => client.get(`/matches/${id}`),
-  getTeam: (id) => client.get(`/teams/${id}`),
-  getTeamMatches: (id, params = {}) => client.get(`/teams/${id}/matches`, { params }),
-  getPersonMatches: (id, params = {}) => client.get(`/persons/${id}/matches`, { params }),
+  getCompetition: () =>
+    withCache('fd:competition', () => get('/competitions/WC'), TTL.STATIC),
+
+  getMatches: (params = {}) =>
+    withCache(
+      `fd:matches:${JSON.stringify(params)}`,
+      () => get('/competitions/WC/matches', params),
+      TTL.SCHEDULE
+    ),
+
+  getLiveMatches: () =>
+    withCache(
+      'fd:matches:live',
+      () => get('/competitions/WC/matches', { status: 'LIVE' }),
+      TTL.LIVE
+    ),
+
+  getTeams: () =>
+    withCache('fd:teams', () => get('/competitions/WC/teams'), TTL.TEAM),
+
+  getStandings: () =>
+    withCache('fd:standings', () => get('/competitions/WC/standings'), TTL.STANDINGS),
+
+  getMatch: (id) =>
+    withCache(`fd:match:${id}`, () => get(`/matches/${id}`), TTL.MATCH),
+
+  getTeam: (id) =>
+    withCache(`fd:team:${id}`, () => get(`/teams/${id}`), TTL.TEAM),
+
+  getTeamMatches: (id, params = {}) =>
+    withCache(
+      `fd:team:${id}:matches:${JSON.stringify(params)}`,
+      () => get(`/teams/${id}/matches`, params),
+      TTL.SCHEDULE
+    ),
+
+  getPersonMatches: (id, params = {}) =>
+    withCache(
+      `fd:person:${id}:matches`,
+      () => get(`/persons/${id}/matches`, params),
+      TTL.TEAM
+    ),
 };
 
 export default footballDataApi;

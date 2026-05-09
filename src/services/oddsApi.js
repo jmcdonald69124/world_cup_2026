@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { matchProbabilities } from '../utils/bayesian.js';
 
 const BASE_URL = 'https://api.the-odds-api.com/v4';
 const API_KEY = import.meta.env.VITE_ODDS_API_KEY;
@@ -21,9 +22,8 @@ export const oddsApi = {
     }),
 };
 
-// Mock odds for when API key is not available
+// Mock odds derived from ELO model when API key is not available
 export const getMockOdds = (homeElo, awayElo) => {
-  const { matchProbabilities } = require('../utils/bayesian.js');
   const probs = matchProbabilities(homeElo, awayElo);
   const margin = 1.05; // 5% bookmaker margin
   return {

@@ -9,7 +9,6 @@ function GroupMiniTable({ group }) {
   const teams = getTeamsByGroup(group);
   const matches = SCHEDULE.filter(m => m.group === group && m.status === 'FINISHED');
 
-  // Build standings
   const standings = teams.map((team) => {
     let w = 0, d = 0, l = 0, gf = 0, ga = 0;
     matches.forEach((m) => {
@@ -70,7 +69,6 @@ export default function MatchDashboard() {
   const filteredMatches = useMemo(() => {
     let matches = [...SCHEDULE];
 
-    // Status filter
     if (activeFilter === 'Live') matches = matches.filter(m => m.status === 'LIVE');
     else if (activeFilter === 'Scheduled') matches = matches.filter(m => m.status === 'SCHEDULED');
     else if (activeFilter.startsWith('Group ')) {
@@ -78,7 +76,6 @@ export default function MatchDashboard() {
       matches = matches.filter(m => m.group === g);
     }
 
-    // Search
     if (search.trim()) {
       const q = search.toLowerCase();
       matches = matches.filter(m =>
@@ -89,11 +86,9 @@ export default function MatchDashboard() {
       );
     }
 
-    // Sort
     if (sortBy === 'date') matches.sort((a, b) => new Date(a.date) - new Date(b.date));
     else if (sortBy === 'group') matches.sort((a, b) => a.group.localeCompare(b.group));
 
-    // Prioritize LIVE
     const live = matches.filter(m => m.status === 'LIVE');
     const rest = matches.filter(m => m.status !== 'LIVE');
     return [...live, ...rest];
@@ -104,7 +99,6 @@ export default function MatchDashboard() {
   return (
     <div className="min-h-screen pt-20 px-4 pb-12">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-black text-white mb-1">Matches</h1>
           <p className="text-gray-500 text-sm">
@@ -116,9 +110,7 @@ export default function MatchDashboard() {
         </div>
 
         <div className="flex gap-6">
-          {/* Main content */}
           <div className="flex-1 min-w-0">
-            {/* Filters */}
             <div className="flex flex-wrap gap-2 mb-4">
               {['All', 'Live', 'Scheduled'].map((f) => (
                 <button
@@ -140,7 +132,6 @@ export default function MatchDashboard() {
               ))}
             </div>
 
-            {/* Search & Sort */}
             <div className="flex gap-3 mb-5">
               <input
                 type="text"
@@ -159,7 +150,6 @@ export default function MatchDashboard() {
               </select>
             </div>
 
-            {/* Group filter tabs */}
             <div className="flex flex-wrap gap-1.5 mb-5">
               {GROUPS.map((g) => (
                 <button
@@ -176,10 +166,8 @@ export default function MatchDashboard() {
               ))}
             </div>
 
-            {/* Match cards grid */}
             {filteredMatches.length === 0 ? (
               <div className="text-center py-16 text-gray-500">
-                <div className="text-4xl mb-3">⚽</div>
                 <p>No matches found</p>
               </div>
             ) : (
@@ -198,7 +186,6 @@ export default function MatchDashboard() {
             )}
           </div>
 
-          {/* Sidebar */}
           <div className="hidden lg:block w-64 flex-shrink-0 space-y-4">
             <div className="glass-card rounded-xl p-4">
               <h3 className="text-sm font-bold text-white mb-3">Group Standings</h3>

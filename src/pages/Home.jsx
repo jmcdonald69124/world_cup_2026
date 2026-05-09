@@ -5,7 +5,7 @@ import { SCHEDULE } from '../data/schedule.js';
 import MatchCard from '../components/MatchCard.jsx';
 
 function CountdownTimer() {
-  const target = new Date('2026-06-11T00:00:00-05:00').getTime(); // ET timezone
+  const target = new Date('2026-06-11T00:00:00-05:00').getTime();
   const [timeLeft, setTimeLeft] = useState({});
 
   useEffect(() => {
@@ -58,75 +58,52 @@ function CountdownTimer() {
 
 const FEATURE_CARDS = [
   {
-    icon: '📊',
+    num: '01',
     title: 'Live Match Analysis',
-    description: 'Real-time win probabilities powered by Bayesian statistics. Watch probabilities shift with every goal.',
+    description: 'Bayesian win probabilities updated with every goal. See how each event reshapes the probability distribution.',
     link: '/matches',
     color: 'from-wcGreen/20 to-wcGreen/5',
     border: 'border-wcGreen/20',
+    numColor: 'text-wcGreen',
   },
   {
-    icon: '🌍',
+    num: '02',
     title: 'Team Explorer',
-    description: 'Compare any two of the 48 teams with radar charts. Explore ELO ratings, key players, and more.',
+    description: 'Compare 48 national teams with radar charts and ELO ratings. Explore squad depth and key player profiles.',
     link: '/groups',
     color: 'from-wcBlue/20 to-wcBlue/5',
     border: 'border-wcBlue/20',
+    numColor: 'text-wcBlue',
   },
   {
-    icon: '📚',
-    title: 'Learn Statistics',
-    description: 'xG, Bayesian updating, ELO ratings, bookmaker margins — explained with interactive visuals.',
+    num: '03',
+    title: 'Match Simulation',
+    description: 'Poisson goal models with adjustable attack, defense, and home-advantage parameters. Explore scoreline probability matrices.',
     link: '/learn',
     color: 'from-wcGold/20 to-wcGold/5',
     border: 'border-wcGold/20',
+    numColor: 'text-wcGold',
   },
   {
-    icon: '🎯',
-    title: 'Make Predictions',
-    description: 'Predict match outcomes and track your accuracy with the Brier Score — the honest way to grade predictions.',
+    num: '04',
+    title: 'Predict and Score',
+    description: 'Make outcome predictions and measure your accuracy with the Brier Score — the mathematically honest scoring rule.',
     link: '/predictions',
     color: 'from-purple-500/20 to-purple-500/5',
     border: 'border-purple-500/20',
+    numColor: 'text-purple-400',
   },
 ];
-
-// Floating ball component
-function FloatingBall({ style }) {
-  return (
-    <div
-      className="absolute text-4xl select-none pointer-events-none float-ball"
-      style={style}
-    >
-      ⚽
-    </div>
-  );
-}
 
 export default function Home() {
   const liveMatches = SCHEDULE.filter(m => m.status === 'LIVE');
   const upcomingMatches = SCHEDULE.filter(m => m.status === 'SCHEDULED').slice(0, 4);
 
-  const balls = [
-    { top: '10%', left: '5%', animationDuration: '8s', opacity: 0.06, fontSize: '48px' },
-    { top: '20%', right: '8%', animationDuration: '12s', animationDelay: '2s', opacity: 0.04, fontSize: '64px' },
-    { top: '60%', left: '3%', animationDuration: '10s', animationDelay: '4s', opacity: 0.05, fontSize: '40px' },
-    { top: '70%', right: '5%', animationDuration: '9s', animationDelay: '1s', opacity: 0.04, fontSize: '56px' },
-    { top: '40%', left: '50%', animationDuration: '14s', animationDelay: '3s', opacity: 0.03, fontSize: '80px' },
-  ];
-
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
       <section className="relative overflow-hidden pt-20 pb-16 px-4">
-        {/* Background */}
         <div className="absolute inset-0 animated-gradient opacity-50" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-wcDark" />
-
-        {/* Floating balls */}
-        {balls.map((style, i) => (
-          <FloatingBall key={i} style={style} />
-        ))}
 
         <div className="relative max-w-5xl mx-auto text-center">
           <motion.div
@@ -145,11 +122,10 @@ export default function Home() {
               <span className="text-white">2026</span>
             </h1>
             <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-10">
-              The most immersive football statistics experience. Live probabilities, Bayesian analysis, and deep stats for all 48 teams.
+              Poisson simulation, Bayesian analysis, and deep statistics for all 48 teams and 104 matches.
             </p>
           </motion.div>
 
-          {/* Countdown */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -171,19 +147,18 @@ export default function Home() {
               to="/matches"
               className="px-6 py-3 bg-wcGreen text-black font-bold rounded-xl hover:bg-wcGreen/90 transition-all"
             >
-              View Live Matches
+              View Matches
             </Link>
             <Link
               to="/learn"
               className="px-6 py-3 glass-card text-white font-medium rounded-xl hover:bg-white/10 transition-all"
             >
-              Learn Statistics
+              Explore Models
             </Link>
           </motion.div>
         </div>
       </section>
 
-      {/* Feature Cards */}
       <section className="max-w-6xl mx-auto px-4 py-12">
         <motion.h2
           initial={{ opacity: 0 }}
@@ -191,7 +166,7 @@ export default function Home() {
           viewport={{ once: true }}
           className="text-2xl font-bold text-white mb-6 text-center"
         >
-          Everything you need to follow the tournament
+          Mathematics behind the tournament
         </motion.h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {FEATURE_CARDS.map((card, i) => (
@@ -207,7 +182,7 @@ export default function Home() {
                 to={card.link}
                 className={`block h-full glass-card rounded-xl p-5 border ${card.border} bg-gradient-to-br ${card.color} hover:border-white/20 transition-all`}
               >
-                <div className="text-3xl mb-3">{card.icon}</div>
+                <div className={`text-xs font-black tracking-widest mb-3 ${card.numColor}`}>{card.num}</div>
                 <h3 className="font-bold text-white mb-2">{card.title}</h3>
                 <p className="text-sm text-gray-400 leading-relaxed">{card.description}</p>
               </Link>
@@ -216,7 +191,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Live Matches */}
       {liveMatches.length > 0 && (
         <section className="max-w-6xl mx-auto px-4 py-8">
           <div className="flex items-center justify-between mb-5">
@@ -237,7 +211,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* Upcoming Matches */}
       <section className="max-w-6xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-xl font-bold text-white">Upcoming Matches</h2>
@@ -250,7 +223,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats strip */}
       <section className="border-t border-white/5 py-10 mt-8">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">

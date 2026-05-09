@@ -117,7 +117,7 @@ src/
 All API responses are cached in `localStorage` with TTLs tuned to each data type:
 
 | Data | TTL | Reason |
-|------|-----|-------|
+|------|-----|--------|
 | Live match events | 30 seconds | Fresh enough for live updates |
 | Match details | 5 minutes | Balances freshness vs. API calls |
 | Standings | 15 minutes | Updates only after each match ends |

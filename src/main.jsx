@@ -8,10 +8,11 @@ import './index.css';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,
-      gcTime: 30 * 60 * 1000,
+      // Mirror our cache TTLs so React Query doesn't re-fetch while localStorage cache is fresh
+      staleTime: 5 * 60 * 1000,   // 5 minutes default
+      gcTime: 30 * 60 * 1000,     // keep unused data in memory 30 min
       retry: 1,
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: false, // avoid surprise API calls on tab switch
     },
   },
 });

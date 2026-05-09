@@ -41,10 +41,6 @@ body {
   animation: pulse-live 1.5s ease-in-out infinite;
 }
 
-.live-pulse {
-  animation: pulse-live 1.5s ease-in-out infinite;
-}
-
 @keyframes float {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
   33% { transform: translateY(-20px) rotate(120deg); }
@@ -71,22 +67,15 @@ body {
   scrollbar-color: rgba(255,255,255,0.15) transparent;
 }
 
-.scrollbar-thin::-webkit-scrollbar { width: 4px; }
-.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .scrollbar-thin::-webkit-scrollbar-thumb {
   background-color: rgba(255,255,255,0.15);
   border-radius: 2px;
-}
-
-.d3-tooltip {
-  position: absolute;
-  background: rgba(17,24,39,0.95);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: #f1f5f9;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  pointer-events: none;
-  white-space: nowrap;
-  z-index: 100;
 }

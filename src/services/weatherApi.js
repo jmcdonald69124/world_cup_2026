@@ -6,21 +6,28 @@ export const weatherApi = {
   getMatchWeather: async (lat, lon, date) => {
     const response = await axios.get(`${BASE_URL}/forecast`, {
       params: {
-        latitude: lat, longitude: lon,
+        latitude: lat,
+        longitude: lon,
         daily: 'temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max,weathercode',
-        start_date: date, end_date: date,
-        timezone: 'auto', temperature_unit: 'fahrenheit', windspeed_unit: 'mph',
+        start_date: date,
+        end_date: date,
+        timezone: 'auto',
+        temperature_unit: 'fahrenheit',
+        windspeed_unit: 'mph',
       },
     });
     return response.data;
   },
+
   getCurrentWeather: async (lat, lon) => {
     const response = await axios.get(`${BASE_URL}/forecast`, {
       params: {
-        latitude: lat, longitude: lon,
+        latitude: lat,
+        longitude: lon,
         current_weather: true,
         hourly: 'temperature_2m,precipitation_probability,windspeed_10m',
-        timezone: 'auto', temperature_unit: 'fahrenheit',
+        timezone: 'auto',
+        temperature_unit: 'fahrenheit',
       },
     });
     return response.data;
@@ -28,7 +35,30 @@ export const weatherApi = {
 };
 
 export const getWeatherDescription = (code) => {
-  const codes = { 0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',48:'Icy fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',77:'Snow grains',80:'Rain showers',81:'Heavy showers',82:'Violent showers',95:'Thunderstorm',96:'Thunderstorm w/ hail',99:'Thunderstorm w/ heavy hail' };
+  const codes = {
+    0: 'Clear sky',
+    1: 'Mainly clear',
+    2: 'Partly cloudy',
+    3: 'Overcast',
+    45: 'Foggy',
+    48: 'Icy fog',
+    51: 'Light drizzle',
+    53: 'Drizzle',
+    55: 'Heavy drizzle',
+    61: 'Light rain',
+    63: 'Rain',
+    65: 'Heavy rain',
+    71: 'Light snow',
+    73: 'Snow',
+    75: 'Heavy snow',
+    77: 'Snow grains',
+    80: 'Rain showers',
+    81: 'Heavy showers',
+    82: 'Violent showers',
+    95: 'Thunderstorm',
+    96: 'Thunderstorm w/ hail',
+    99: 'Thunderstorm w/ heavy hail',
+  };
   return codes[code] || 'Unknown';
 };
 

@@ -3,6 +3,7 @@ export const convertOdds = {
     if (decimal >= 2) return `+${Math.round((decimal - 1) * 100)}`;
     return `${Math.round(-100 / (decimal - 1))}`;
   },
+
   decimalToFractional(decimal) {
     const num = decimal - 1;
     if (num <= 0) return '1/100';
@@ -11,17 +12,23 @@ export const convertOdds = {
     const g = gcd(numerator, denom);
     return `${numerator / g}/${denom / g}`;
   },
-  decimalToImplied(decimal) { return ((1 / decimal) * 100).toFixed(1) + '%'; },
+
+  decimalToImplied(decimal) {
+    return ((1 / decimal) * 100).toFixed(1) + '%';
+  },
+
   americanToDecimal(american) {
     const n = parseInt(american);
     if (n > 0) return (n / 100 + 1).toFixed(2);
     return (100 / Math.abs(n) + 1).toFixed(2);
   },
+
   impliedToDecimal(impliedPct) {
     const prob = parseFloat(impliedPct) / 100;
     if (prob <= 0) return '999.00';
     return (1 / prob).toFixed(2);
   },
+
   formatAmerican(prob) {
     if (prob <= 0) return '+999';
     if (prob >= 1) return '-999';
@@ -30,5 +37,8 @@ export const convertOdds = {
   },
 };
 
-function gcd(a, b) { return b ? gcd(b, a % b) : a; }
+function gcd(a, b) {
+  return b ? gcd(b, a % b) : a;
+}
+
 export default convertOdds;

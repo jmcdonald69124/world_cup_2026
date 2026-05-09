@@ -5,7 +5,6 @@ import { matchProbabilities, brierScore } from '../utils/bayesian.js';
 
 const STORAGE_KEY = 'wc2026_predictions';
 
-// Mock crowd predictions (in a real app these would come from a backend)
 function getCrowdPrediction(matchId) {
   const seed = matchId * 7919;
   const homeP = 20 + (seed % 60);
@@ -39,30 +38,26 @@ function OutcomeButton({ label, selected, onClick, prob, crowdPct, color }) {
       <span className="text-lg font-black">{prob}%</span>
       <span className="text-xs opacity-60">model</span>
       {crowdPct !== undefined && (
-        <span className="text-xs mt-1 opacity-50">{crowdPct}% fans</span>
+        <span className="text-xs mt-1 opacity-50">{crowdPct}% crowd</span>
       )}
     </motion.button>
   );
 }
 
-function MatchPredictionCard({ match, prediction, onPredict, onConfirm }) {
+function MatchPredictionCard({ match, prediction, onPredict }) {
   const initialProbs = matchProbabilities(match.homeTeam.eloRating, match.awayTeam.eloRating);
   const homeProb = Math.round(initialProbs.home * 100);
   const drawProb = Math.round(initialProbs.draw * 100);
   const awayProb = Math.round(initialProbs.away * 100);
 
   const crowd = getCrowdPrediction(match.id);
-
   const hasPrediction = prediction !== null && prediction !== undefined;
-  const [pendingPick, setPendingPick] = useState(null);
-
-  const handlePick = (outcome) => {
-    setPendingPick(outcome);
-    onPredict(match.id, outcome);
-  };
-
   const isLive = match.status === 'LIVE';
   const isFinished = match.status === 'FINISHED';
+
+  const handlePick = (outcome) => {
+    onPredict(match.id, outcome);
+  };
 
   return (
     <motion.div
@@ -71,7 +66,6 @@ function MatchPredictionCard({ match, prediction, onPredict, onConfirm }) {
       animate={{ opacity: 1, y: 0 }}
       className={`glass-card rounded-xl p-4 ${isLive ? 'border border-red-500/20' : ''}`}
     >
-      {/* Match header */}
       <div className="flex items-center justify-between mb-3">
         <span className="text-xs text-gray-500 font-semibold">Group {match.group} · {match.date}</span>
         {isLive && (
@@ -85,7 +79,6 @@ function MatchPredictionCard({ match, prediction, onPredict, onConfirm }) {
         )}
       </div>
 
-      {/* Teams */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <span className="text-2xl">{match.homeTeam.flagEmoji}</span>
@@ -98,7 +91,6 @@ function MatchPredictionCard({ match, prediction, onPredict, onConfirm }) {
         </div>
       </div>
 
-      {/* Pick buttons */}
       <div className="flex gap-2 mb-3">
         <OutcomeButton
           label={match.homeTeam.code}
@@ -126,7 +118,6 @@ function MatchPredictionCard({ match, prediction, onPredict, onConfirm }) {
         />
       </div>
 
-      {/* After prediction: explanation */}
       <AnimatePresence>
         {hasPrediction && (
           <motion.div
@@ -135,16 +126,13 @@ function MatchPredictionCard({ match, prediction, onPredict, onConfirm }) {
             exit={{ opacity: 0, height: 0 }}
             className="text-xs bg-white/5 rounded-lg p-3"
           >
-            <div className="flex items-start gap-2">
-              <span>🎯</span>
-              <div>
-                <span className="text-gray-300">
-                  Your prediction: <strong className="text-white">{prediction === 'home' ? match.homeTeam.name : prediction === 'away' ? match.awayTeam.name : 'Draw'}</strong>
-                </span>
-                <div className="text-gray-500 mt-1">
-                  Model agrees with probability {prediction === 'home' ? homeProb : prediction === 'away' ? awayProb : drawProb}%.
-                  Crowd: {prediction === 'home' ? crowd.home : prediction === 'away' ? crowd.away : crowd.draw}% also pick this.
-                </div>
+            <div>
+              <span className="text-gray-300">
+                Predicted: <strong className="text-white">{prediction === 'home' ? match.homeTeam.name : prediction === 'away' ? match.awayTeam.name : 'Draw'}</strong>
+              </span>
+              <div className="text-gray-500 mt-1">
+                Model probability: {prediction === 'home' ? homeProb : prediction === 'away' ? awayProb : drawProb}%.
+                Crowd: {prediction === 'home' ? crowd.home : prediction === 'away' ? crowd.away : crowd.draw}% agree.
               </div>
             </div>
           </motion.div>
@@ -159,20 +147,20 @@ function BrierScoreExplainer() {
     <div className="glass-card rounded-xl p-5">
       <h3 className="text-sm font-bold text-white mb-3">How predictions are scored</h3>
       <p className="text-sm text-gray-400 mb-3 leading-relaxed">
-        We grade predictions using the <strong className="text-white">Brier Score</strong> — unlike simple "right/wrong" scoring, it rewards honest probability estimates.
+        Predictions are graded using the <strong className="text-white">Brier Score</strong> — a proper scoring rule that rewards calibrated probability estimates, not just correct picks.
       </p>
       <div className="bg-gray-900/50 rounded-lg p-3 mb-3 text-center">
         <code className="text-wcGold text-sm font-mono">
-          Brier Score = (p_home - o_home)² + (p_draw - o_draw)² + (p_away - o_away)²
+          Brier Score = (p_home − o_home)² + (p_draw − o_draw)² + (p_away − o_away)²
         </code>
       </div>
       <div className="space-y-2 text-xs text-gray-500">
-        <p>• <strong className="text-gray-300">0.0</strong> = perfect (assigned 100% to correct outcome)</p>
-        <p>• <strong className="text-gray-300">0.67</strong> = worst possible score (assigned 100% to wrong outcome)</p>
-        <p>• <strong className="text-gray-300">0.22</strong> = score for saying 33% on each outcome every time</p>
+        <p>· <strong className="text-gray-300">0.0</strong> = perfect (assigned 100% to correct outcome)</p>
+        <p>· <strong className="text-gray-300">0.67</strong> = worst possible (assigned 100% to wrong outcome)</p>
+        <p>· <strong className="text-gray-300">0.22</strong> = naive baseline (uniform 33% on all three outcomes)</p>
       </div>
       <div className="mt-3 text-xs text-gray-600">
-        💡 Brier scoring incentivizes honesty — you score better by saying "60% chance" than "100% chance" if you're uncertain.
+        Brier scoring incentivizes honesty — saying "60%" scores better than "100%" when uncertain.
       </div>
     </div>
   );
@@ -182,23 +170,17 @@ export default function Predictions() {
   const [predictions, setPredictions] = useState({});
   const [showExplainer, setShowExplainer] = useState(false);
 
-  // Load from localStorage on mount
   useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) setPredictions(JSON.parse(stored));
-    } catch {
-      // ignore
-    }
+    } catch { }
   }, []);
 
-  // Save to localStorage on change
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(predictions));
-    } catch {
-      // ignore
-    }
+    } catch { }
   }, [predictions]);
 
   const handlePredict = (matchId, outcome) => {
@@ -208,7 +190,6 @@ export default function Predictions() {
   const predictionCount = Object.keys(predictions).length;
   const totalMatches = SCHEDULE.length;
 
-  // Calculate score for finished matches
   const finishedWithPredictions = SCHEDULE.filter(
     (m) => m.status === 'FINISHED' && predictions[m.id]
   );
@@ -238,7 +219,7 @@ export default function Predictions() {
         <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
           <div>
             <h1 className="text-3xl font-black text-white mb-2">Predictions</h1>
-            <p className="text-gray-500">Predict match outcomes and track your accuracy</p>
+            <p className="text-gray-500">Predict match outcomes and track your statistical accuracy</p>
           </div>
           <div className="flex gap-2">
             <button
@@ -258,7 +239,6 @@ export default function Predictions() {
           </div>
         </div>
 
-        {/* Stats bar */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {[
             { label: 'Predictions Made', value: predictionCount, color: 'text-wcGreen' },
@@ -286,16 +266,14 @@ export default function Predictions() {
           )}
         </AnimatePresence>
 
-        {/* Crowd vs Model info box */}
-        <div className="glass-card rounded-xl p-4 mb-6 border border-wcBlue/20 bg-wcBlue/5">
-          <h4 className="text-sm font-semibold text-white mb-1">📊 Crowd Wisdom vs Model</h4>
+        <div className="glass-card rounded-xl p-4 mb-6 border border-white/10">
+          <h4 className="text-sm font-semibold text-white mb-1">Model probabilities</h4>
           <p className="text-xs text-gray-400">
-            Each card shows both the model's probability and what % of fans predict each outcome.
-            When crowd and model strongly disagree, that's worth investigating — crowds are often overconfident in big-name teams.
+            Each card shows the Poisson model’s win, draw, and loss probabilities derived from ELO ratings.
+            Crowd percentages show aggregate fan picks. When you diverge from the model, note why — that reasoning is the point.
           </p>
         </div>
 
-        {/* Live matches */}
         {liveMatches.length > 0 && (
           <div className="mb-8">
             <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
@@ -315,7 +293,6 @@ export default function Predictions() {
           </div>
         )}
 
-        {/* Upcoming */}
         <div>
           <h2 className="text-lg font-bold text-white mb-3">Upcoming Matches</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -330,11 +307,10 @@ export default function Predictions() {
           </div>
         </div>
 
-        {/* Leaderboard concept */}
         <div className="mt-10 glass-card rounded-xl p-5">
-          <h3 className="text-sm font-bold text-white mb-2">🏆 Leaderboard (Coming Soon)</h3>
+          <h3 className="text-sm font-bold text-white mb-2">Leaderboard — Coming Soon</h3>
           <p className="text-sm text-gray-400 mb-3">
-            Compete with other fans! Predictions are stored locally — in a future version, you'll be able to create an account and compare your Brier scores against the global leaderboard.
+            Predictions are stored locally. A future version will support accounts and a global Brier Score leaderboard.
           </p>
           <div className="grid grid-cols-3 gap-2 text-xs text-gray-600">
             <div className="bg-white/3 rounded-lg p-2">

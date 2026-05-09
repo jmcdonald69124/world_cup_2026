@@ -3,19 +3,18 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getMatchById } from '../data/schedule.js';
 import { getTeamByCode } from '../data/teams.js';
-import { matchProbabilities, applyMatchEvents, probToDecimal } from '../utils/bayesian.js';
+import { matchProbabilities, applyMatchEvents } from '../utils/bayesian.js';
 import WinProbabilityGauge from '../components/charts/WinProbabilityGauge.jsx';
 import ProbabilityHistory from '../components/charts/ProbabilityHistory.jsx';
 import MatchTimeline from '../components/charts/MatchTimeline.jsx';
 import TeamRadar from '../components/charts/TeamRadar.jsx';
 import WeatherWidget from '../components/WeatherWidget.jsx';
-import OddsExplainer from '../components/OddsExplainer.jsx';
+import MatchSimulator from '../components/MatchSimulator.jsx';
 
-// Generate team stats from ELO rating
 function getTeamStats(team) {
   if (!team) return {};
   const elo = team.eloRating || 1700;
-  const base = (elo - 1400) / 700; // normalize 0-1
+  const base = (elo - 1400) / 700;
   return {
     attack: Math.min(95, Math.round(50 + base * 45 + (Math.random() * 10 - 5))),
     defense: Math.min(95, Math.round(48 + base * 42 + (Math.random() * 10 - 5))),
@@ -46,7 +45,6 @@ function StatBar({ label, homeVal, awayVal }) {
   );
 }
 
-// Mock live stats
 function generateLiveStats(match) {
   const homeAdv = match.score.home > match.score.away ? 1.2 : match.score.home < match.score.away ? 0.8 : 1.0;
   return {
@@ -60,7 +58,6 @@ function generateLiveStats(match) {
   };
 }
 
-// Mock lineup
 function generateLineup(teamName) {
   return [
     { number: 1, name: `${teamName} GK`, position: 'GK' },
@@ -77,7 +74,6 @@ function generateLineup(teamName) {
   ];
 }
 
-// H2H mock data
 const H2H_RESULTS = [
   { year: 2022, competition: 'World Cup', home: null, away: null, homeScore: 2, awayScore: 1 },
   { year: 2019, competition: 'Friendly', home: null, away: null, homeScore: 0, awayScore: 0 },
@@ -89,13 +85,11 @@ const H2H_RESULTS = [
 export default function MatchDetail() {
   const { id } = useParams();
   const match = getMatchById(id);
-  const [showOddsExplainer, setShowOddsExplainer] = useState(false);
 
   if (!match) {
     return (
       <div className="min-h-screen pt-24 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-5xl mb-4">⚽</div>
           <h2 className="text-xl font-bold text-white mb-2">Match not found</h2>
           <Link to="/matches" className="text-wcGreen hover:underline">← Back to matches</Link>
         </div>
@@ -121,11 +115,6 @@ export default function MatchDetail() {
   const homeStats = getTeamStats(homeTeamFull);
   const awayStats = getTeamStats(awayTeamFull);
 
-  // Odds based on model
-  const homeOdds = parseFloat(probToDecimal(currentProbs.home * 0.95));
-  const drawOdds = parseFloat(probToDecimal(currentProbs.draw * 0.95));
-  const awayOdds = parseFloat(probToDecimal(currentProbs.away * 0.95));
-
   const h2h = H2H_RESULTS.map((r, i) => ({
     ...r,
     home: i % 2 === 0 ? match.homeTeam.name : match.awayTeam.name,
@@ -135,12 +124,10 @@ export default function MatchDetail() {
   return (
     <div className="min-h-screen pt-20 pb-12 px-4">
       <div className="max-w-5xl mx-auto">
-        {/* Back */}
         <Link to="/matches" className="inline-flex items-center gap-1 text-gray-500 hover:text-white text-sm mb-6 transition-colors">
           ← Back to Matches
         </Link>
 
-        {/* Match Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -164,7 +151,6 @@ export default function MatchDetail() {
           </div>
 
           <div className="flex items-center justify-between gap-4">
-            {/* Home */}
             <div className="flex-1 text-center">
               <div className="text-5xl mb-2">{match.homeTeam.flagEmoji}</div>
               <h2 className="font-bold text-white text-lg">{match.homeTeam.name}</h2>
@@ -174,7 +160,6 @@ export default function MatchDetail() {
               )}
             </div>
 
-            {/* Score */}
             <div className="text-center flex-shrink-0 px-6">
               {isScheduled ? (
                 <div>
@@ -193,7 +178,6 @@ export default function MatchDetail() {
               )}
             </div>
 
-            {/* Away */}
             <div className="flex-1 text-center">
               <div className="text-5xl mb-2">{match.awayTeam.flagEmoji}</div>
               <h2 className="font-bold text-white text-lg">{match.awayTeam.name}</h2>
@@ -204,16 +188,13 @@ export default function MatchDetail() {
             </div>
           </div>
 
-          {/* Stadium */}
           <div className="mt-4 pt-4 border-t border-white/5 text-center text-xs text-gray-500">
-            📍 {match.stadium.name}, {match.stadium.city}
+            {match.stadium.name}, {match.stadium.city}
           </div>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main column */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Win Probability Gauge */}
             <div className="glass-card rounded-xl p-5">
               <h3 className="text-sm font-bold text-white mb-4">Win Probability</h3>
               <WinProbabilityGauge
@@ -239,7 +220,6 @@ export default function MatchDetail() {
               </div>
             </div>
 
-            {/* Probability History */}
             <div className="glass-card rounded-xl p-5">
               <h3 className="text-sm font-bold text-white mb-4">Probability History</h3>
               <ProbabilityHistory
@@ -251,7 +231,6 @@ export default function MatchDetail() {
               />
             </div>
 
-            {/* Match Timeline */}
             {!isScheduled && (
               <div className="glass-card rounded-xl p-5">
                 <h3 className="text-sm font-bold text-white mb-4">Match Timeline</h3>
@@ -264,7 +243,6 @@ export default function MatchDetail() {
               </div>
             )}
 
-            {/* Live Stats */}
             {liveStats && (
               <div className="glass-card rounded-xl p-5">
                 <h3 className="text-sm font-bold text-white mb-4">Match Statistics</h3>
@@ -282,7 +260,6 @@ export default function MatchDetail() {
               </div>
             )}
 
-            {/* Team Radar */}
             <div className="glass-card rounded-xl p-5">
               <h3 className="text-sm font-bold text-white mb-4">Team Comparison</h3>
               <TeamRadar
@@ -293,7 +270,6 @@ export default function MatchDetail() {
               />
             </div>
 
-            {/* Lineups */}
             <div className="glass-card rounded-xl p-5">
               <h3 className="text-sm font-bold text-white mb-4">Lineups</h3>
               <div className="grid grid-cols-2 gap-6">
@@ -334,7 +310,6 @@ export default function MatchDetail() {
               </div>
             </div>
 
-            {/* H2H */}
             <div className="glass-card rounded-xl p-5">
               <h3 className="text-sm font-bold text-white mb-4">Head to Head (Last 5)</h3>
               <div className="space-y-2">
@@ -358,53 +333,21 @@ export default function MatchDetail() {
               </div>
             </div>
 
-            {/* Odds section */}
             <div className="glass-card rounded-xl p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-bold text-white">Match Odds</h3>
-                <button
-                  onClick={() => setShowOddsExplainer(!showOddsExplainer)}
-                  className="text-xs text-wcGold hover:underline"
-                >
-                  {showOddsExplainer ? 'Hide explainer' : 'How do odds work?'}
-                </button>
-              </div>
-
-              {/* Quick odds display */}
-              <div className="grid grid-cols-3 gap-3 mb-4">
-                {[
-                  { label: match.homeTeam.name, odds: homeOdds, key: 'home' },
-                  { label: 'Draw', odds: drawOdds, key: 'draw' },
-                  { label: match.awayTeam.name, odds: awayOdds, key: 'away' },
-                ].map(({ label, odds, key }) => (
-                  <div key={key} className="bg-white/5 rounded-lg p-3 text-center">
-                    <div className="text-xs text-gray-500 mb-1 truncate">{label}</div>
-                    <div className="text-xl font-black text-white">{odds.toFixed(2)}</div>
-                    <div className="text-xs text-wcGold">{((1 / odds) * 100).toFixed(0)}%</div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="text-xs text-gray-600 mb-4">
-                * Odds derived from model probabilities. Always verify with licensed bookmakers.
-              </div>
-
-              {showOddsExplainer && (
-                <OddsExplainer
-                  homeTeam={match.homeTeam.name}
-                  awayTeam={match.awayTeam.name}
-                  initialOdds={{ home: homeOdds, draw: drawOdds, away: awayOdds }}
-                />
-              )}
+              <h3 className="text-sm font-bold text-white mb-1">Match Simulator</h3>
+              <p className="text-xs text-gray-500 mb-5">Adjust attack, defense, and home-advantage parameters to explore how outcome probabilities shift. Uses a Poisson goal model.</p>
+              <MatchSimulator
+                homeTeam={match.homeTeam.name}
+                awayTeam={match.awayTeam.name}
+                homeElo={match.homeTeam.eloRating}
+                awayElo={match.awayTeam.eloRating}
+              />
             </div>
           </div>
 
-          {/* Right sidebar */}
           <div className="space-y-4">
-            {/* Weather */}
             <WeatherWidget stadium={match.stadium} date={match.date} />
 
-            {/* Quick stats */}
             <div className="glass-card rounded-xl p-4">
               <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">ELO Ratings</h4>
               <div className="space-y-3">
@@ -435,7 +378,6 @@ export default function MatchDetail() {
               </div>
             </div>
 
-            {/* Key Players */}
             {homeTeamFull && awayTeamFull && (
               <div className="glass-card rounded-xl p-4">
                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Key Players</h4>
@@ -443,20 +385,19 @@ export default function MatchDetail() {
                   <div>
                     <div className="text-xs text-wcGreen font-semibold mb-1">{match.homeTeam.name}</div>
                     {homeTeamFull.keyPlayers.map((p) => (
-                      <div key={p} className="text-xs text-gray-300 py-0.5">⭐ {p}</div>
+                      <div key={p} className="text-xs text-gray-300 py-0.5">· {p}</div>
                     ))}
                   </div>
                   <div className="border-t border-white/5 pt-3">
                     <div className="text-xs text-wcRed font-semibold mb-1">{match.awayTeam.name}</div>
                     {awayTeamFull.keyPlayers.map((p) => (
-                      <div key={p} className="text-xs text-gray-300 py-0.5">⭐ {p}</div>
+                      <div key={p} className="text-xs text-gray-300 py-0.5">· {p}</div>
                     ))}
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Goal events */}
             {match.events?.filter(e => e.type === 'goal').length > 0 && (
               <div className="glass-card rounded-xl p-4">
                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Goals</h4>
@@ -465,7 +406,7 @@ export default function MatchDetail() {
                     const isHome = e.scoredBy === 'home';
                     return (
                       <div key={i} className={`flex items-center gap-2 text-xs ${isHome ? '' : 'flex-row-reverse text-right'}`}>
-                        <span>⚽</span>
+                        <span className="text-gray-500">Goal</span>
                         <div>
                           <span className="text-white font-medium">{e.player}</span>
                           {e.assist && <span className="text-gray-500 ml-1">(assist: {e.assist})</span>}

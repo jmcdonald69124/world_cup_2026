@@ -5,14 +5,17 @@ export default {
     extend: {
       colors: {
         wcGreen: '#00A550',
-        wcRed: '#DA291C',
-        wcBlue: '#003DA5',
-        wcGold: '#FFD700',
-        wcDark: '#0a0a0f',
-        wcCard: '#111827',
+        wcRed:   '#DA291C',
+        wcBlue:  '#003DA5',
+        wcGold:  '#FFD700',
+        wcDark:  '#080808',
+        wcCard:  '#111111',
       },
       fontFamily: {
         display: ['Inter', 'sans-serif'],
+      },
+      fontSize: {
+        '2xs': ['0.65rem', { lineHeight: '1rem' }],
       },
     },
   },

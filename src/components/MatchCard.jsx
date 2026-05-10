@@ -6,145 +6,104 @@ import { matchProbabilities, applyMatchEvents } from '../utils/bayesian.js';
 export default function MatchCard({ match, onClick }) {
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    if (onClick) onClick(match);
-    else navigate(`/match/${match.id}`);
-  };
-
-  const isLive = match.status === 'LIVE';
-  const isFinished = match.status === 'FINISHED' || match.status === 'FT';
+  const isLive      = match.status === 'LIVE';
+  const isFinished  = match.status === 'FINISHED' || match.status === 'FT';
   const isScheduled = match.status === 'SCHEDULED';
 
-  // Calculate win probabilities
-  const initialProbs = matchProbabilities(match.homeTeam.eloRating, match.awayTeam.eloRating);
-  const currentProbs = isLive && match.events?.length > 0
-    ? applyMatchEvents(initialProbs, match.events)
-    : initialProbs;
+  const probs = isLive && match.events?.length > 0
+    ? applyMatchEvents(matchProbabilities(match.homeTeam.eloRating, match.awayTeam.eloRating), match.events)
+    : matchProbabilities(match.homeTeam.eloRating, match.awayTeam.eloRating);
 
-  const homeW = Math.round(currentProbs.home * 100);
-  const drawW = Math.round(currentProbs.draw * 100);
-  const awayW = Math.round(currentProbs.away * 100);
+  const homeW = Math.round(probs.home * 100);
+  const drawW = Math.round(probs.draw * 100);
+  const awayW = Math.round(probs.away * 100);
 
   return (
     <motion.div
-      whileHover={{ scale: 1.02, y: -2 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      onClick={handleClick}
-      className="glass-card rounded-xl p-4 cursor-pointer hover:border-white/20 transition-all duration-200 relative overflow-hidden"
+      whileHover={{ backgroundColor: 'rgba(255,255,255,0.03)' }}
+      transition={{ duration: 0.15 }}
+      onClick={() => onClick ? onClick(match) : navigate(`/match/${match.id}`)}
+      className="card rounded-xl p-4 cursor-pointer transition-colors relative overflow-hidden"
     >
-      {/* Live glow effect */}
-      {isLive && (
-        <div className="absolute inset-0 bg-green-500/5 pointer-events-none" />
-      )}
+      {isLive && <div className="absolute top-0 left-0 right-0 h-px bg-wcGreen" />}
 
-      {/* Header: Group + Status */}
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-2xs font-semibold text-gray-600 uppercase tracking-wider">
           Group {match.group} · MD{match.matchday}
         </span>
         {isLive && (
-          <div className="flex items-center gap-1.5 bg-red-500/15 px-2.5 py-1 rounded-full">
-            <span className="w-1.5 h-1.5 bg-red-500 rounded-full live-pulse" />
-            <span className="text-xs font-bold text-red-400">{match.currentMinute}'</span>
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 bg-wcGreen rounded-full live-pulse" />
+            <span className="text-2xs font-bold text-wcGreen">{match.currentMinute}'</span>
           </div>
         )}
         {isFinished && (
-          <span className="text-xs font-semibold text-gray-500 bg-gray-800 px-2.5 py-1 rounded-full">FT</span>
+          <span className="text-2xs font-semibold text-gray-600 bg-white/[0.05] px-2 py-0.5 rounded-full">FT</span>
         )}
         {isScheduled && (
-          <span className="text-xs text-gray-500">{match.time} {match.timezone}</span>
+          <span className="text-2xs text-gray-600">{match.time}</span>
         )}
       </div>
 
-      {/* Teams & Score */}
-      <div className="flex items-center justify-between gap-2">
-        {/* Home Team */}
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">{match.homeTeam.flagEmoji}</span>
-            <div>
-              <div className="font-semibold text-sm text-white leading-tight">{match.homeTeam.name}</div>
-              <div className="text-xs text-gray-500">{match.homeTeam.code}</div>
-            </div>
+      {/* Teams + score */}
+      <div className="flex items-center gap-3">
+        <div className="flex-1 flex items-center gap-2 min-w-0">
+          <span className="text-xl flex-shrink-0">{match.homeTeam.flagEmoji}</span>
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-white truncate leading-tight">{match.homeTeam.name}</div>
+            <div className="text-2xs text-gray-600 font-mono">{match.homeTeam.code}</div>
           </div>
         </div>
 
-        {/* Score / VS */}
-        <div className="text-center flex-shrink-0 px-3">
+        <div className="flex-shrink-0 text-center px-2">
           {isScheduled ? (
-            <div>
-              <span className="text-gray-500 font-bold text-lg">vs</span>
-              <div className="text-xs text-gray-600 mt-0.5">{match.date}</div>
-            </div>
+            <div className="text-xs text-gray-600 font-medium">vs</div>
           ) : (
-            <div className="flex items-center gap-2">
-              <span className={`text-2xl font-black ${isLive ? 'text-white' : 'text-gray-300'}`}>
+            <div className="flex items-center gap-1.5">
+              <span className={`text-xl font-black tabular-nums ${isLive ? 'text-white' : 'text-gray-400'}`}>
                 {match.score.home ?? 0}
               </span>
-              <span className="text-gray-600 font-light">-</span>
-              <span className={`text-2xl font-black ${isLive ? 'text-white' : 'text-gray-300'}`}>
+              <span className="text-gray-700 text-sm">–</span>
+              <span className={`text-xl font-black tabular-nums ${isLive ? 'text-white' : 'text-gray-400'}`}>
                 {match.score.away ?? 0}
               </span>
             </div>
           )}
         </div>
 
-        {/* Away Team */}
-        <div className="flex-1 flex justify-end">
-          <div className="flex items-center gap-2 flex-row-reverse">
-            <span className="text-2xl">{match.awayTeam.flagEmoji}</span>
-            <div className="text-right">
-              <div className="font-semibold text-sm text-white leading-tight">{match.awayTeam.name}</div>
-              <div className="text-xs text-gray-500">{match.awayTeam.code}</div>
-            </div>
+        <div className="flex-1 flex items-center gap-2 justify-end min-w-0 flex-row-reverse">
+          <span className="text-xl flex-shrink-0">{match.awayTeam.flagEmoji}</span>
+          <div className="min-w-0 text-right">
+            <div className="text-sm font-semibold text-white truncate leading-tight">{match.awayTeam.name}</div>
+            <div className="text-2xs text-gray-600 font-mono">{match.awayTeam.code}</div>
           </div>
         </div>
       </div>
 
-      {/* Stadium */}
-      <div className="mt-2 text-xs text-gray-600 text-center">
+      <div className="mt-2 text-2xs text-gray-700 text-center truncate">
         {match.stadium.name}, {match.stadium.city}
       </div>
 
-      {/* Win probability bar (live only) */}
-      {(isLive || isFinished) && (
-        <div className="mt-3 pt-3 border-t border-white/5">
-          <div className="flex text-xs text-gray-500 justify-between mb-1">
-            <span className="font-medium text-wcGreen">{homeW}%</span>
-            <span>Draw {drawW}%</span>
-            <span className="font-medium text-wcRed">{awayW}%</span>
-          </div>
-          <div className="flex h-1.5 rounded-full overflow-hidden bg-gray-800">
-            <div className="bg-wcGreen probability-bar" style={{ width: `${homeW}%` }} />
-            <div className="bg-gray-600 probability-bar" style={{ width: `${drawW}%` }} />
-            <div className="bg-wcRed probability-bar" style={{ width: `${awayW}%` }} />
-          </div>
+      {/* Probability bar */}
+      <div className="mt-4 pt-3 border-t border-white/[0.06]">
+        <div className="flex justify-between text-2xs text-gray-600 mb-1.5">
+          <span className={isLive ? 'text-wcGreen font-medium' : ''}>{homeW}%</span>
+          <span>Draw · {drawW}%</span>
+          <span>{awayW}%</span>
         </div>
-      )}
-
-      {/* Scheduled: model probabilities */}
-      {isScheduled && (
-        <div className="mt-3 pt-3 border-t border-white/5">
-          <div className="flex text-xs text-gray-600 justify-between mb-1">
-            <span>{homeW}%</span>
-            <span>Draw {drawW}%</span>
-            <span>{awayW}%</span>
-          </div>
-          <div className="flex h-1 rounded-full overflow-hidden bg-gray-800">
-            <div className="bg-wcGreen/50 probability-bar" style={{ width: `${homeW}%` }} />
-            <div className="bg-gray-600/50 probability-bar" style={{ width: `${drawW}%` }} />
-            <div className="bg-wcRed/50 probability-bar" style={{ width: `${awayW}%` }} />
-          </div>
+        <div className="flex h-0.5 rounded-full overflow-hidden bg-white/[0.06]">
+          <div className="bg-wcGreen probability-bar" style={{ width: `${homeW}%` }} />
+          <div className="bg-gray-600 probability-bar" style={{ width: `${drawW}%` }} />
+          <div className="bg-wcRed probability-bar" style={{ width: `${awayW}%` }} />
         </div>
-      )}
+      </div>
 
-      {/* Goal events for live matches */}
       {isLive && match.events?.filter(e => e.type === 'goal').length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-1">
+        <div className="mt-3 flex flex-wrap gap-1">
           {match.events.filter(e => e.type === 'goal').map((e, i) => (
-            <span key={i} className="text-xs bg-white/5 rounded px-1.5 py-0.5 text-gray-400">
-              ⚽ {e.player} {e.minute}'
+            <span key={i} className="text-2xs bg-white/[0.04] rounded px-1.5 py-0.5 text-gray-500">
+              {e.player} {e.minute}'
             </span>
           ))}
         </div>

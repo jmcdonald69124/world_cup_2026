@@ -37,81 +37,40 @@ const PLAYERS = [
 
 const POSITIONS = ['All', 'GK', 'DF', 'MF', 'FW'];
 
-function PlayerCard({ player, selected, onSelect, onCompare, compareMode, compareSelected }) {
+function PlayerCard({ player, onSelect, onCompare, compareSelected }) {
   const isCompareSelected = compareSelected?.id === player.id;
-
   return (
-    <motion.div
-      layout
-      whileHover={{ scale: 1.02, y: -2 }}
-      className={`glass-card rounded-xl p-4 cursor-pointer transition-all ${
-        isCompareSelected ? 'border-wcGold/50 bg-wcGold/5' : 'hover:border-white/20'
-      }`}
-      onClick={() => onSelect(player)}
-    >
+    <motion.div layout whileHover={{ scale: 1.02, y: -2 }} className={`glass-card rounded-xl p-4 cursor-pointer transition-all ${isCompareSelected ? 'border-wcGold/50 bg-wcGold/5' : 'hover:border-white/20'}`} onClick={() => onSelect(player)}>
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-2xl">{player.flagEmoji}</span>
-          <div>
-            <div className="font-bold text-white text-sm">{player.name}</div>
-            <div className="text-xs text-gray-500">{player.team} · {player.club}</div>
-          </div>
+          <div><div className="font-bold text-white text-sm">{player.name}</div><div className="text-xs text-gray-500">{player.team} · {player.club}</div></div>
         </div>
         <div className="flex flex-col items-end gap-1">
           <span className="text-xs font-bold px-2 py-0.5 rounded bg-wcBlue/20 text-wcBlue">{player.position}</span>
           <span className="text-xs text-gray-600">Age {player.age}</span>
         </div>
       </div>
-
       <div className="grid grid-cols-3 gap-2 text-center mb-3">
         {player.position === 'GK' ? (
           <>
-            <div className="bg-white/5 rounded-lg py-1.5">
-              <div className="text-sm font-bold text-white">{player.stats.saves}</div>
-              <div className="text-xs text-gray-600">Saves</div>
-            </div>
-            <div className="bg-white/5 rounded-lg py-1.5">
-              <div className="text-sm font-bold text-white">{player.stats.passAccuracy}%</div>
-              <div className="text-xs text-gray-600">Pass %</div>
-            </div>
-            <div className="bg-white/5 rounded-lg py-1.5">
-              <div className="text-sm font-bold text-white">{player.age}</div>
-              <div className="text-xs text-gray-600">Age</div>
-            </div>
+            <div className="bg-white/5 rounded-lg py-1.5"><div className="text-sm font-bold text-white">{player.stats.saves}</div><div className="text-xs text-gray-600">Saves</div></div>
+            <div className="bg-white/5 rounded-lg py-1.5"><div className="text-sm font-bold text-white">{player.stats.passAccuracy}%</div><div className="text-xs text-gray-600">Pass %</div></div>
+            <div className="bg-white/5 rounded-lg py-1.5"><div className="text-sm font-bold text-white">{player.age}</div><div className="text-xs text-gray-600">Age</div></div>
           </>
         ) : (
           <>
-            <div className="bg-white/5 rounded-lg py-1.5">
-              <div className="text-sm font-bold text-wcGold">{player.stats.goals}</div>
-              <div className="text-xs text-gray-600">Goals</div>
-            </div>
-            <div className="bg-white/5 rounded-lg py-1.5">
-              <div className="text-sm font-bold text-wcGreen">{player.stats.assists}</div>
-              <div className="text-xs text-gray-600">Assists</div>
-            </div>
-            {player.position === 'DF' ? (
-              <div className="bg-white/5 rounded-lg py-1.5">
-                <div className="text-sm font-bold text-blue-400">{player.stats.tackles}</div>
-                <div className="text-xs text-gray-600">Tackles</div>
-              </div>
-            ) : (
-              <div className="bg-white/5 rounded-lg py-1.5">
-                <div className="text-sm font-bold text-blue-400">{player.stats.dribbles}</div>
-                <div className="text-xs text-gray-600">Dribbles</div>
-              </div>
-            )}
+            <div className="bg-white/5 rounded-lg py-1.5"><div className="text-sm font-bold text-wcGold">{player.stats.goals}</div><div className="text-xs text-gray-600">Goals</div></div>
+            <div className="bg-white/5 rounded-lg py-1.5"><div className="text-sm font-bold text-wcGreen">{player.stats.assists}</div><div className="text-xs text-gray-600">Assists</div></div>
+            {player.position === 'DF'
+              ? <div className="bg-white/5 rounded-lg py-1.5"><div className="text-sm font-bold text-blue-400">{player.stats.tackles}</div><div className="text-xs text-gray-600">Tackles</div></div>
+              : <div className="bg-white/5 rounded-lg py-1.5"><div className="text-sm font-bold text-blue-400">{player.stats.dribbles}</div><div className="text-xs text-gray-600">Dribbles</div></div>
+            }
           </>
         )}
       </div>
-
-      <button
-        onClick={(e) => { e.stopPropagation(); onCompare(player); }}
-        className={`w-full py-1.5 rounded-lg text-xs font-semibold transition-all ${
-          isCompareSelected
-            ? 'bg-wcGold/20 text-wcGold border border-wcGold/30'
-            : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
-        }`}
-      >
+      <button onClick={(e) => { e.stopPropagation(); onCompare(player); }}
+        className={`w-full py-1.5 rounded-lg text-xs font-semibold transition-all ${isCompareSelected ? 'bg-wcGold/20 text-wcGold border border-wcGold/30' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}>
         {isCompareSelected ? '✓ Selected for compare' : 'Compare'}
       </button>
     </motion.div>
@@ -125,21 +84,18 @@ export default function PlayerExplorer() {
   const [compareB, setCompareB] = useState(null);
   const [showCompare, setShowCompare] = useState(false);
 
-  const filtered = useMemo(() => {
-    return PLAYERS.filter((p) => {
-      const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.team.toLowerCase().includes(search.toLowerCase());
-      const matchPos = posFilter === 'All' || p.position === posFilter;
-      return matchSearch && matchPos;
-    });
-  }, [search, posFilter]);
+  const filtered = useMemo(() => PLAYERS.filter((p) => {
+    const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.team.toLowerCase().includes(search.toLowerCase());
+    const matchPos = posFilter === 'All' || p.position === posFilter;
+    return matchSearch && matchPos;
+  }), [search, posFilter]);
 
   const handleCompare = (player) => {
     if (compareA?.id === player.id) { setCompareA(null); return; }
     if (compareB?.id === player.id) { setCompareB(null); return; }
     if (!compareA) { setCompareA(player); return; }
     if (!compareB) { setCompareB(player); setShowCompare(true); return; }
-    setCompareA(player);
-    setCompareB(null);
+    setCompareA(player); setCompareB(null);
   };
 
   return (
@@ -149,82 +105,39 @@ export default function PlayerExplorer() {
           <h1 className="text-3xl font-black text-white mb-2">Player Explorer</h1>
           <p className="text-gray-500">{PLAYERS.length} players · Compare any two with radar charts</p>
         </div>
-
         <AnimatePresence>
           {(compareA || compareB) && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="glass-card rounded-xl p-4 mb-5 border border-wcGold/20 bg-wcGold/5"
-            >
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="glass-card rounded-xl p-4 mb-5 border border-wcGold/20 bg-wcGold/5">
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <div className="flex items-center gap-4">
                   <span className="text-xs font-semibold text-wcGold">COMPARING</span>
-                  {compareA && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <span>{compareA.flagEmoji}</span>
-                      <span className="text-white font-medium">{compareA.name}</span>
-                    </div>
-                  )}
+                  {compareA && <div className="flex items-center gap-2 text-sm"><span>{compareA.flagEmoji}</span><span className="text-white font-medium">{compareA.name}</span></div>}
                   {compareA && compareB && <span className="text-gray-500">vs</span>}
-                  {compareB && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <span>{compareB.flagEmoji}</span>
-                      <span className="text-white font-medium">{compareB.name}</span>
-                    </div>
-                  )}
+                  {compareB && <div className="flex items-center gap-2 text-sm"><span>{compareB.flagEmoji}</span><span className="text-white font-medium">{compareB.name}</span></div>}
                   {!compareB && <span className="text-gray-500 text-sm">Select one more player</span>}
                 </div>
                 <div className="flex gap-2">
-                  {compareA && compareB && (
-                    <button
-                      onClick={() => setShowCompare(!showCompare)}
-                      className="px-3 py-1.5 bg-wcGold/20 text-wcGold text-xs font-bold rounded-lg hover:bg-wcGold/30 transition-all"
-                    >
-                      {showCompare ? 'Hide' : 'View'} Comparison
-                    </button>
-                  )}
-                  <button
-                    onClick={() => { setCompareA(null); setCompareB(null); setShowCompare(false); }}
-                    className="px-3 py-1.5 bg-white/5 text-gray-400 text-xs rounded-lg hover:bg-white/10 transition-all"
-                  >
-                    Clear
-                  </button>
+                  {compareA && compareB && <button onClick={() => setShowCompare(!showCompare)} className="px-3 py-1.5 bg-wcGold/20 text-wcGold text-xs font-bold rounded-lg hover:bg-wcGold/30 transition-all">{showCompare ? 'Hide' : 'View'} Comparison</button>}
+                  <button onClick={() => { setCompareA(null); setCompareB(null); setShowCompare(false); }} className="px-3 py-1.5 bg-white/5 text-gray-400 text-xs rounded-lg hover:bg-white/10 transition-all">Clear</button>
                 </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-
         <AnimatePresence>
           {showCompare && compareA && compareB && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="glass-card rounded-xl p-6 mb-6"
-            >
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="glass-card rounded-xl p-6 mb-6">
               <h3 className="text-lg font-bold text-white mb-4">Player Comparison</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-2">
-                  <TeamRadar
-                    teamA={{ name: compareA.name, primaryColor: '#00A550' }}
-                    teamB={{ name: compareB.name, primaryColor: '#DA291C' }}
-                    statsA={compareA.radarStats}
-                    statsB={compareB.radarStats}
-                  />
+                  <TeamRadar teamA={{ name: compareA.name, primaryColor: '#00A550' }} teamB={{ name: compareB.name, primaryColor: '#DA291C' }} statsA={compareA.radarStats} statsB={compareB.radarStats} />
                 </div>
                 <div className="space-y-4">
                   {[compareA, compareB].map((p, pi) => (
                     <div key={p.id} className={`p-3 rounded-lg ${pi === 0 ? 'bg-wcGreen/10' : 'bg-wcRed/10'}`}>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span>{p.flagEmoji}</span>
-                        <span className="font-bold text-white text-sm">{p.name}</span>
-                      </div>
+                      <div className="flex items-center gap-2 mb-2"><span>{p.flagEmoji}</span><span className="font-bold text-white text-sm">{p.name}</span></div>
                       <div className="text-xs text-gray-400 space-y-1">
-                        <div>Club: {p.club}</div>
-                        <div>Age: {p.age}</div>
+                        <div>Club: {p.club}</div><div>Age: {p.age}</div>
                         <div>Goals: {p.stats.goals} | Assists: {p.stats.assists}</div>
                         {p.position === 'GK' && <div>Saves: {p.stats.saves}</div>}
                         <div>Pass%: {p.stats.passAccuracy}%</div>
@@ -236,48 +149,18 @@ export default function PlayerExplorer() {
             </motion.div>
           )}
         </AnimatePresence>
-
         <div className="flex flex-wrap gap-3 mb-5">
-          <input
-            type="text"
-            placeholder="Search players or teams..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 min-w-48 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-wcGreen/50"
-          />
+          <input type="text" placeholder="Search players or teams..." value={search} onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 min-w-48 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-wcGreen/50" />
           <div className="flex gap-2">
-            {POSITIONS.map((pos) => (
-              <button
-                key={pos}
-                onClick={() => setPosFilter(pos)}
-                className={`px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-                  posFilter === pos
-                    ? 'bg-wcBlue text-white'
-                    : 'glass-card text-gray-400 hover:text-white'
-                }`}
-              >
-                {pos}
-              </button>
-            ))}
+            {POSITIONS.map((pos) => <button key={pos} onClick={() => setPosFilter(pos)} className={`px-3 py-2 rounded-lg text-xs font-bold transition-all ${posFilter === pos ? 'bg-wcBlue text-white' : 'glass-card text-gray-400 hover:text-white'}`}>{pos}</button>)}
           </div>
         </div>
-
         <p className="text-xs text-gray-600 mb-4">{filtered.length} players</p>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filtered.map((player, i) => (
-            <motion.div
-              key={player.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.03 }}
-            >
-              <PlayerCard
-                player={player}
-                onSelect={() => {}}
-                onCompare={handleCompare}
-                compareSelected={compareA?.id === player.id ? compareA : compareB?.id === player.id ? compareB : null}
-              />
+            <motion.div key={player.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
+              <PlayerCard player={player} onSelect={() => {}} onCompare={handleCompare} compareSelected={compareA?.id === player.id ? compareA : compareB?.id === player.id ? compareB : null} />
             </motion.div>
           ))}
         </div>

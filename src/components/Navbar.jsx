@@ -10,6 +10,7 @@ const navLinks = [
   { to: '/players', label: 'Players' },
   { to: '/learn', label: 'Learn Stats' },
   { to: '/predictions', label: 'Predictions' },
+  { to: '/2022', label: '2022 Archive' },
 ];
 
 function CacheStatus() {

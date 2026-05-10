@@ -10,6 +10,7 @@ const navLinks = [
   { to: '/players', label: 'Players' },
   { to: '/learn', label: 'Learn Stats' },
   { to: '/predictions', label: 'Predictions' },
+  { to: '/2022', label: '2022 Archive' },
 ];
 
 function CacheStatus() {
@@ -59,7 +60,7 @@ export default function Navbar() {
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => removeEventListener('scroll', handleScroll);
   }, []);
 
   return (

@@ -8,6 +8,7 @@ import Groups from './pages/Groups.jsx';
 import PlayerExplorer from './pages/PlayerExplorer.jsx';
 import StatsEducation from './pages/StatsEducation.jsx';
 import Predictions from './pages/Predictions.jsx';
+import WC2022 from './pages/WC2022.jsx';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/players" element={<PlayerExplorer />} />
           <Route path="/learn" element={<StatsEducation />} />
           <Route path="/predictions" element={<Predictions />} />
+          <Route path="/2022" element={<WC2022 />} />
         </Routes>
       </main>
     </div>

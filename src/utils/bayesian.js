@@ -102,37 +102,6 @@ export function buildProbabilityHistory(initialProbs, events, finalMinute = 90) 
   return history;
 }
 
-// Convert decimal odds to implied probability
-export function decimalToImplied(decimal) {
-  return 1 / decimal;
-}
-
-// Convert probability to American odds
-export function probToAmerican(prob) {
-  if (prob <= 0) return '+999';
-  if (prob >= 1) return '-999';
-  if (prob >= 0.5) return `-${Math.round((prob / (1 - prob)) * 100)}`;
-  return `+${Math.round(((1 - prob) / prob) * 100)}`;
-}
-
-// Convert probability to decimal odds
-export function probToDecimal(prob) {
-  if (prob <= 0) return '999.00';
-  return (1 / prob).toFixed(2);
-}
-
-// Calculate bookmaker margin (vig) from decimal odds
-export function bookmakerMargin(homeOdds, drawOdds, awayOdds) {
-  return ((1 / homeOdds + 1 / drawOdds + 1 / awayOdds - 1) * 100).toFixed(2);
-}
-
-// Calculate expected value of a bet
-export function expectedValue(trueProb, decimalOdds, stake = 100) {
-  const profit = stake * (decimalOdds - 1);
-  const loss = stake;
-  return (trueProb * profit - (1 - trueProb) * loss).toFixed(2);
-}
-
 // Brier score for prediction evaluation
 export function brierScore(predictedProbs, actualOutcome) {
   // actualOutcome: 'home', 'draw', or 'away'

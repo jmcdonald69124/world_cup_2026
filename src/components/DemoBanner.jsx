@@ -22,8 +22,8 @@ export default function DemoBanner() {
           <div className="flex items-center gap-3 min-w-0">
             <span className="w-1.5 h-1.5 rounded-full bg-wcGold flex-shrink-0" />
             <p className="text-xs text-gray-400 leading-snug">
-              <span className="text-white font-medium">Demo mode · WC 2022 data</span>
-              {' '}— App will switch to live WC 2026 data automatically when the tournament begins.
+              <span className="text-white font-medium">Pre-tournament · WC 2026 group stage</span>
+              {' '}— All 72 fixtures scheduled. Live scores and results will appear automatically when the tournament begins Jun 11.
             </p>
           </div>
           <button

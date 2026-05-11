@@ -8,10 +8,10 @@
  *
  * The API key comes from VITE_FOOTBALL_DATA_API_KEY in .env.
  * Until the key is set (or the tournament starts), every daily poll will fail
- * gracefully — the app simply stays on WC 2022 demo data.
+ * gracefully — the app simply stays on the pre-tournament schedule.
  */
 
-const STORAGE_KEY  = 'wc2026_live_fixtures';
+const STORAGE_KEY   = 'wc2026_live_fixtures';
 const POLL_DATE_KEY = 'wc2026_last_poll_date';
 const WC_COMPETITION = 'WC';
 const WC_SEASON = 2026;
@@ -99,7 +99,7 @@ export async function pollForLiveData() {
     );
 
     if (!res.ok) {
-      console.info(`[poller] football-data.org returned ${res.status} — staying on demo data`);
+      console.info(`[poller] football-data.org returned ${res.status} — staying on pre-tournament schedule`);
       return;
     }
 
@@ -113,6 +113,7 @@ export async function pollForLiveData() {
 
     const normalised = normaliseFixtures(matches);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(normalised));
+
     window.dispatchEvent(new CustomEvent('wc2026:live-data-ready', { detail: normalised }));
     console.info(`[poller] ✓ ${normalised.length} WC 2026 fixtures loaded from API.`);
   } catch (err) {

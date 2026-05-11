@@ -33,6 +33,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-5 sm:px-8">
         <div className="flex items-center justify-between h-14">
 
+          {/* Logo */}
           <NavLink to="/" className="flex items-center gap-2.5 group">
             <span className="w-2 h-2 rounded-full bg-wcGreen" />
             <span className="font-black text-base tracking-tight text-white">
@@ -40,6 +41,7 @@ export default function Navbar() {
             </span>
           </NavLink>
 
+          {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-0.5">
             {navLinks.map((link) => (
               <NavLink
@@ -47,7 +49,9 @@ export default function Navbar() {
                 to={link.to}
                 className={({ isActive }) =>
                   `relative px-3.5 py-2 text-sm font-medium transition-colors duration-150 rounded-md ${
-                    isActive ? 'text-white' : 'text-gray-500 hover:text-gray-200'
+                    isActive
+                      ? 'text-white'
+                      : 'text-gray-500 hover:text-gray-200'
                   }`
                 }
               >
@@ -67,13 +71,15 @@ export default function Navbar() {
             ))}
           </div>
 
+          {/* Right side */}
           <div className="hidden md:flex items-center gap-2">
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/[0.08] bg-white/[0.03]">
               <span className="w-1.5 h-1.5 bg-wcGreen rounded-full live-pulse" />
-              <span className="text-2xs font-semibold text-gray-400 uppercase tracking-wider">Demo</span>
+              <span className="text-2xs font-semibold text-gray-400 uppercase tracking-wider">Jun 11</span>
             </div>
           </div>
 
+          {/* Hamburger */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="md:hidden flex flex-col justify-center items-center w-8 h-8 gap-1.5 rounded text-gray-400 hover:text-white transition-colors"
@@ -86,6 +92,7 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* Mobile menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -102,7 +109,9 @@ export default function Navbar() {
                   to={link.to}
                   className={({ isActive }) =>
                     `block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                      isActive ? 'text-white bg-white/[0.05]' : 'text-gray-500 hover:text-white hover:bg-white/[0.03]'
+                      isActive
+                        ? 'text-white bg-white/[0.05]'
+                        : 'text-gray-500 hover:text-white hover:bg-white/[0.03]'
                     }`
                   }
                 >

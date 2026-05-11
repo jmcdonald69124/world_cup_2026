@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { WC2022_TEAMS, WC2022_GROUPS } from '../data/wc2022/teams.js';
+import { GROUPS, getTeamsByGroup } from '../data/teams.js';
 import { SCHEDULE } from '../data/schedule.js';
-
-const GROUPS = WC2022_GROUPS;
-const getTeamsByGroup = (g) => WC2022_TEAMS.filter(t => t.group === g);
 
 function buildStandings(group) {
   const teams = getTeamsByGroup(group);
@@ -42,7 +39,7 @@ function TeamRow({ team, position, onClick }) {
     'border-l-2 border-transparent';
 
   const posLabel =
-    position <= 2 ? 'Advanced' :
+    position <= 2 ? 'Advance' :
     position === 3 ? 'Best 3rd?' : 'Eliminated';
   const posColor =
     position <= 2 ? 'text-wcGreen' :
@@ -87,7 +84,10 @@ function GroupCard({ group, defaultExpanded }) {
   const liveCount = groupMatches.filter(m => m.status === 'LIVE').length;
 
   return (
-    <motion.div layout className="glass-card rounded-xl overflow-hidden">
+    <motion.div
+      layout
+      className="glass-card rounded-xl overflow-hidden"
+    >
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/5 transition-colors"
@@ -187,7 +187,7 @@ export default function Groups() {
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-black text-white mb-2">Group Stage</h1>
-          <p className="text-gray-500">8 groups · 4 teams each · Top 2 advance from each group</p>
+          <p className="text-gray-500">12 groups · 4 teams each · Top 2 + 8 best 3rd place advance</p>
         </div>
 
         <div className="flex flex-wrap gap-4 mb-6 text-xs">

@@ -3,13 +3,12 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getMatchById } from '../data/schedule.js';
 import { getTeamByCode } from '../data/teams.js';
-import { matchProbabilities, applyMatchEvents, probToDecimal } from '../utils/bayesian.js';
+import { matchProbabilities, applyMatchEvents } from '../utils/bayesian.js';
 import WinProbabilityGauge from '../components/charts/WinProbabilityGauge.jsx';
 import ProbabilityHistory from '../components/charts/ProbabilityHistory.jsx';
 import MatchTimeline from '../components/charts/MatchTimeline.jsx';
 import TeamRadar from '../components/charts/TeamRadar.jsx';
 import WeatherWidget from '../components/WeatherWidget.jsx';
-import OddsExplainer from '../components/OddsExplainer.jsx';
 
 function getTeamStats(team) {
   if (!team) return {};
@@ -85,7 +84,6 @@ const H2H_RESULTS = [
 export default function MatchDetail() {
   const { id } = useParams();
   const match = getMatchById(id);
-  const [showOddsExplainer, setShowOddsExplainer] = useState(false);
 
   if (!match) {
     return (
@@ -116,10 +114,6 @@ export default function MatchDetail() {
 
   const homeStats = getTeamStats(homeTeamFull);
   const awayStats = getTeamStats(awayTeamFull);
-
-  const homeOdds = parseFloat(probToDecimal(currentProbs.home * 0.95));
-  const drawOdds = parseFloat(probToDecimal(currentProbs.draw * 0.95));
-  const awayOdds = parseFloat(probToDecimal(currentProbs.away * 0.95));
 
   const h2h = H2H_RESULTS.map((r, i) => ({
     ...r,
@@ -339,43 +333,6 @@ export default function MatchDetail() {
               </div>
             </div>
 
-            <div className="glass-card rounded-xl p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-bold text-white">Match Odds</h3>
-                <button
-                  onClick={() => setShowOddsExplainer(!showOddsExplainer)}
-                  className="text-xs text-wcGold hover:underline"
-                >
-                  {showOddsExplainer ? 'Hide explainer' : 'How do odds work?'}
-                </button>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3 mb-4">
-                {[
-                  { label: match.homeTeam.name, odds: homeOdds, key: 'home' },
-                  { label: 'Draw', odds: drawOdds, key: 'draw' },
-                  { label: match.awayTeam.name, odds: awayOdds, key: 'away' },
-                ].map(({ label, odds, key }) => (
-                  <div key={key} className="bg-white/5 rounded-lg p-3 text-center">
-                    <div className="text-xs text-gray-500 mb-1 truncate">{label}</div>
-                    <div className="text-xl font-black text-white">{odds.toFixed(2)}</div>
-                    <div className="text-xs text-wcGold">{((1 / odds) * 100).toFixed(0)}%</div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="text-xs text-gray-600 mb-4">
-                * Odds derived from model probabilities. Always verify with licensed bookmakers.
-              </div>
-
-              {showOddsExplainer && (
-                <OddsExplainer
-                  homeTeam={match.homeTeam.name}
-                  awayTeam={match.awayTeam.name}
-                  initialOdds={{ home: homeOdds, draw: drawOdds, away: awayOdds }}
-                />
-              )}
-            </div>
           </div>
 
           <div className="space-y-4">

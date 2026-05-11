@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getTeamsByGroup, GROUPS } from '../data/teams.js';
+import { GROUPS, getTeamsByGroup } from '../data/teams.js';
 import { SCHEDULE } from '../data/schedule.js';
 
 function buildStandings(group) {
@@ -189,15 +189,14 @@ export default function Groups() {
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-black text-white mb-2">Group Stage</h1>
-          <p className="text-gray-500">12 groups · 4 teams each · Top 2 qualify + best 8 third-placed teams</p>
+          <p className="text-gray-500">12 groups · 4 teams each · Top 2 + 8 best 3rd place advance</p>
         </div>
 
         {/* Legend */}
         <div className="flex flex-wrap gap-4 mb-6 text-xs">
           {[
-            { color: 'bg-wcGreen', label: 'Advance to Round of 32 (Top 2)' },
-            { color: 'bg-blue-500', label: 'Advancing' },
-            { color: 'bg-orange-500', label: 'Potential Best 3rd' },
+            { color: 'bg-wcGreen', label: 'Advanced (Top 2)' },
+            { color: 'bg-orange-500', label: 'Best 3rd (potential)' },
             { color: 'bg-gray-600', label: 'Eliminated' },
           ].map(({ color, label }) => (
             <div key={label} className="flex items-center gap-2">
